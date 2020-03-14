@@ -103,6 +103,9 @@ class Game(arcade.Window):
         if key == arcade.key.UP:
             if self.physics_engine.can_jump():
                 self.player.jump()
+        if key == arcade.key.DOWN:
+            self.player.sliding = True
+        
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.RIGHT or key == arcade.key.LEFT:

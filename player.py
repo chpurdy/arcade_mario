@@ -20,6 +20,7 @@ class Player(arcade.AnimatedWalkingSprite):
         self.speed = 5
         self.jumping = False
         self.falling = False
+        self.sliding = False
 
         for i in range(5):
             texture = arcade.load_texture(f"images/Character/Idle__00{i}.png")
@@ -61,8 +62,13 @@ class Player(arcade.AnimatedWalkingSprite):
         self.change_y = 0
 
     def update(self):
+        if self.change_x == 0:
+            self.sliding = False
+        if self.jumping:
+            self.sliding = False
         self.center_x += self.change_x
         self.center_y += self.change_y
+
 
         
         
@@ -90,35 +96,43 @@ class Player(arcade.AnimatedWalkingSprite):
         if self.change_x == 0 and self.change_y == 0:
             if self.state == FACE_LEFT:
                 self.texture = self.stand_left_textures[0]
+                #texture_list = self.stand_left_textures
             elif self.state == FACE_RIGHT:
                 self.texture = self.stand_right_textures[0]
+                #texture_list = self.stand_right_textures
 
         elif change_direction or distance >= self.texture_change_distance:
             self.last_texture_change_center_x = self.center_x
             self.last_texture_change_center_y = self.center_y
 
             if self.state == FACE_LEFT:
-                if self.change_y == 0:   
+                if self.sliding:
+                    texture_list = self.slide_left_textures
+                elif self.change_y == 0:   
                     texture_list = self.walk_left_textures
                 elif self.change_y > 0:
                     texture_list = self.jump_left_textures[:1]
+                
                 else:
                     texture_list = self.jump_right_textures[1:2]
             
                 
             elif self.state == FACE_RIGHT:
-                if self.change_y == 0:
+                if self.sliding:
+                    texture_list = self.slide_right_textures
+                elif self.change_y == 0:
                     texture_list = self.walk_right_textures
                 elif self.change_y > 0:
                     texture_list = self.jump_right_textures[:1]
+                
                 else:
                     texture_list = self.jump_right_textures[1:2]
                
                 
             self.cur_texture_index += 1
+            
             if self.cur_texture_index >= len(texture_list):
                 self.cur_texture_index = 0
-
             self.texture = texture_list[self.cur_texture_index]
 
         if self._texture is None:
